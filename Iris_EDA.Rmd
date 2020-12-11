@@ -1,0 +1,280 @@
+---
+title: "Iris Dataset"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+rm(list = ls())
+```
+
+
+```{r}
+# Load libraries
+library(readr)
+library(Hmisc) #For describe()
+library(pastecs) #For stat.desc()
+library(car) #For qqPlot
+library(PerformanceAnalytics)
+library(caret) #For BoxCoxTrans
+library(bestNormalize)
+```
+
+
+```{r}
+# Set Working directory
+knitr::opts_knit$set(root.dir = "/home/arizzo/Projects/Iris")
+```
+
+
+```{r}
+# Import dataset
+df = read_csv("/home/arizzo/Projects/Iris/data/raw/iris.data")
+```
+```{r}
+# Create labels
+colnames(df) = c("sepal_length", "sepal_width", "petal_length", "petal_width", "class")
+colnames(df)
+```
+
+
+```{r}
+# Check if there are missing values
+sum(is.na(df))
+```
+
+
+```{r}
+# Save dataframe
+save(df, file = "/home/arizzo/Projects/Iris/data/processed/Iris_proc.Rda")
+```
+
+```{r}
+# Check variable types
+str(df)
+```
+
+```{r}
+# Check summary measures 
+describe(df)
+```
+
+```{r}
+stat.desc(df,norm = TRUE)
+# Se normtest.p é MAIOR que 0.05 os dados são normalmente distribuídos
+```
+
+
+```{r}
+boxplot(df[,-5])
+```
+
+```{r}
+# Plot Histograms
+for (a in 1:4) {
+ hist(df[a], nclass = 20)
+}
+
+```
+
+```{r}
+# QQ Plot
+qqPlot(df$sepal_length)
+qqPlot(df$sepal_width)
+qqPlot(df$petal_length)
+qqPlot(df$petal_width)
+```
+
+```{r}
+# Transformation on VAR 1 -> sepal_length
+
+
+new_sepal_length = BoxCoxTrans(df$sepal_length)
+
+new_sepal_length
+
+sepal_length_trans =  predict(object = new_sepal_length, newdata = df$sepal_length)
+
+shapiro.test(sepal_length_trans)
+
+hist(sepal_length_trans)
+
+qqPlot(sepal_length_trans)
+
+```
+A transformação da variável 1 conseguiu aproximar a distribuição de uma Normal, utilizar a coluna **new_sepal_length**
+
+```{r}
+# Alterando o dataframe
+df$sepal_length_trans = sepal_length_trans
+df$sepal_length = NULL
+df
+```
+
+
+
+```{r}
+# Transformation on VAR 3 -> petal_length
+
+new_petal_length = BoxCoxTrans(df$petal_length)
+
+new_petal_length
+
+petal_length_trans = predict(object = new_petal_length, newdata = df$petal_length)
+
+shapiro.test(petal_length_trans)
+
+hist(petal_length_trans)
+
+qqPlot(petal_length_trans)
+```
+Neste caso a transformação de Box Cox não foi bem sucedida
+
+
+```{r}
+# Verificando se existe outro tipo de transformação que pode ser realizada
+
+bestNormalize(df$petal_length)
+```
+
+A Ordered Quantile Normalizing Transformation apresenta o melhor desempenho
+
+```{r}
+# Aplicando a transformação Ordered Quantile Normalizing
+
+new_petal_length = orderNorm(df$petal_length)
+
+petal_length_trans = predict(new_petal_length, newdata = petal_length_trans)
+
+shapiro.test(petal_length_trans)
+
+hist(petal_length_trans)
+
+qqPlot(petal_length_trans)
+```
+
+```{r}
+# Alterando o dataframe
+df$petal_length_trans = petal_length_trans
+df$petal_length = NULL
+df
+```
+
+
+
+```{r}
+# Transformation on VAR4 -> petal_width
+
+new_petal_width = BoxCoxTrans(df$petal_width)
+
+new_petal_width
+
+petal_width_trans = predict(object = new_petal_width, newdata = df$petal_width)
+
+shapiro.test(petal_width_trans)
+
+hist(petal_width_trans)
+
+qqPlot(petal_width_trans)
+```
+Neste caso a transformação de Box Cox não foi bem sucedida
+
+```{r}
+# Verificando se existe outro tipo de transformação que pode ser realizada
+
+bestNormalize(df$petal_width)
+```
+
+A Ordered Quantile Normalizing Transformation apresenta o melhor desempenho
+
+```{r}
+# Aplicando a transformação Ordered Quantile Normalizing
+
+new_petal_width = orderNorm(df$petal_width)
+
+petal_width_trans = predict(new_petal_width, petal_width_trans)
+
+shapiro.test(petal_width_trans)
+
+hist(petal_width_trans)
+
+qqPlot(petal_width_trans)
+```
+
+
+```{r}
+# Plot class densities
+freq_tbl = table(df$class)
+barplot(freq_tbl, col = "red")
+```
+
+```{r}
+#Adjust Dataframe
+
+df_predictor = df
+df_predictor = df_predictor[,-3]
+
+df_response = df[,c('class')]
+```
+
+
+
+```{r}
+
+chart.Correlation(R = df_predictor, histogram = TRUE, method = "pearson")
+# p-values greater than |0.7| can be considered strong
+
+
+# O método de Spearman e Pearson somente funcionam quando há relação linear entre as variáveis
+# Para relações não lineares faz-se necessário o uso de outros métodos, tal como DISTANCE CORRELATION
+# Pacote R: energy
+# Pacote Python: Scipy.spatial.distance.correlation
+#  https://en.wikipedia.org/wiki/Distance_correlation
+"
+The following points are the accepted guidelines for interpreting the correlation coefficient:
+1. 0  indicates no linear relationship.
+
+2. +1 indicates a perfect positive linear relationship – as one variable increases in its values, the other
+variable also increases in its values through an exact linear rule.
+
+3. −1 indicates a perfect negative linear relationship – as one variable increases in its values, the other variable decreases in its values through an exact linear rule.
+
+4. Values between 0 and 0.3 (0 and −0.3) indicate a weak positive (negative) linear relationship
+through a shaky linear rule.
+
+5. Values between 0.3 and 0.7 (0.3 and −0.7) indicate a moderate positive (negative) linear
+relationship through a fuzzy-firm linear rule.
+
+6. Values between 0.7 and 1.0 (−0.7 and −1.0) indicate a strong positive (negative) linear
+relationship through a firm linear rule.
+
+7. The value of r2, called the coefficient of determination, and denoted R2 is typically interpreted as ‘the percent of variation in one variable explained by the other variable,’ or ‘the percent of variation shared between the two
+variables.
+
+
+"
+```
+
+
+```{r eval=FALSE, include=FALSE}
+boxplot(df_corr$new_sepal_length ~ df$class)
+boxplot(df_corr$sepal_width ~ df$class)
+boxplot(df_corr$petal_length ~ df$class)
+boxplot(df_corr$petal_width ~ df$class)
+
+```
+
+Trabalharemos com as variáveis sepal_width e petal_length_trans
+
+```{r}
+df_predictor_new = df_predictor[,c("sepal_width", "petal_length_trans")]
+
+```
+
+```{r}
+write_csv(x = df_predictor_new, file = "/home/arizzo/Projects/Iris/data/processed/iris_predictors.csv")
+write_csv(x = df_response, file = "/home/arizzo/Projects/Iris/data/processed/iris_response.csv")
+```
+
+
