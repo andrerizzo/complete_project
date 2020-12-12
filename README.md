@@ -25,8 +25,8 @@ Practice some steps of the ML process.
 - AdaBoost
 - Multi Layer Perceptron (MLP)
 
-### Model Selection Criteria
-The models with the first four best scores were selected and hyperparameter tuning will be performed, prior to the definite model training. 
+### Model Selection Criteria:
+Models with the first four best scores were selected and hyperparameter tuning will be performed, prior to the definite model training. 
 
 ### Hyperparameter Tuning:
 I'm trying to use Bayesian Optimization, but the computational resources needed are bigger than the available ones. Keep trying ... </br>
