@@ -1,5 +1,6 @@
 # Complete Project
-There is not so much creativity in this title but that's ok.
+There is not much creativity in this title but that's ok. </br>
+***It is under construction, so updates will be uploaded as far as new features are being added.***
 
 ### Objective:
 Practice some steps of the ML process.
@@ -13,9 +14,6 @@ Practice some steps of the ML process.
 - For modeling, hyperparameter tuning and prediction I'm using Python.
 - For the preliminar model performance testing no hyperparameter tuning was performed and no dataset splitting was done too. For this purpose 10-Fold Cross-Validation was used.
 
-### Hyperparameter Tuning:
-I'm trying to use Bayesian Optimization, but the computational resources needed are bigger than the available ones. Keep trying ...
-
 ### Models Tested:
 - Linear Discriminant Analysis (LDA)
 - k-Nearest Neighbors (kNN)
@@ -26,6 +24,13 @@ I'm trying to use Bayesian Optimization, but the computational resources needed 
 - Random Forest
 - AdaBoost
 - Multi Layer Perceptron (MLP)
+
+### Model Selection Criteria
+The models with the first four best scores were selected and hyperparameter tuning will be performed, prior to the definite model training. 
+
+### Hyperparameter Tuning:
+I'm trying to use Bayesian Optimization, but the computational resources needed are bigger than the available ones. Keep trying ... </br>
+Grid Search and Random Search will be also tested. 
 
 ### Author:
 André Rizzo
