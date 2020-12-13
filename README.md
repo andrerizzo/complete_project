@@ -29,8 +29,7 @@ Practice some steps of the ML process.
 Models with the first four best scores were selected and hyperparameter tuning will be performed, prior to the definite model training. 
 
 ### Hyperparameter Tuning:
-I'm trying to use Bayesian Optimization, but the computational resources needed are bigger than the available ones. Keep trying ... </br>
-Grid Search and Random Search will be also tested. 
+Bayesian Optimization was used with the implementation of tune-sklearn library  
 
 ### Author:
 André Rizzo
