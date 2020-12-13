@@ -1,6 +1,6 @@
 # Complete Project
 There is not much creativity in this title but that's ok. </br>
-***It is under construction, so updates will be uploaded as far as new features are being added.***
+***It is under construction, so updates will be uploaded as far as new features were added.***
 
 ### Objective:
 Practice some steps of the ML process.
